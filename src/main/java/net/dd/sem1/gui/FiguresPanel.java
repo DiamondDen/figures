@@ -3,8 +3,7 @@ package net.dd.sem1.gui;
 import net.dd.sem1.exception.FigureException;
 import net.dd.sem1.figure.Figure;
 import net.dd.sem1.figure.FigureFactory;
-import net.dd.sem1.gui.render.RenderElement;
-import net.dd.sem1.gui.render.RenderUnit;
+import net.dd.sem1.gui.render.*;
 import net.dd.sem1.gui.util.Position;
 import net.dd.sem1.gui.util.ThrowingSupplier;
 
@@ -12,7 +11,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Executors;
@@ -21,7 +22,7 @@ import java.util.function.Supplier;
 
 public class FiguresPanel extends JPanel {
 
-  private final List<RenderUnit> elementList = new ArrayList<>();
+  private final List<Unit> elementList = new ArrayList<>();
 
   private final Random r = new Random();
 
@@ -33,7 +34,39 @@ public class FiguresPanel extends JPanel {
     this.addCreateButton("Square", () -> figureFactory.createSquare(r.nextInt(58) + 3));
     this.addCreateButton("Rectangle", () -> figureFactory.createRectangle(r.nextInt(58) + 3, r.nextInt(58) + 3));
 
+    MouseAdapter mouseAdapter = new MouseAdapter() {
+      @Override
+      public void mousePressed(MouseEvent e) {
+        Unit unit = getCaptured(e.getX(), e.getY());
+        if (unit == null) return;
+
+      }
+
+      @Override
+      public void mouseMoved(MouseEvent e) {
+
+      }
+    };
+    this.addMouseListener(mouseAdapter);
+    this.addMouseMotionListener(mouseAdapter);
+
     Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::repaint, 0, 15, TimeUnit.MILLISECONDS);
+  }
+
+  public Unit getCaptured(int x, int y) {
+    List<Unit> captured = new ArrayList<>();
+
+    for (Unit unit : this.elementList) {
+      if (unit instanceof MovedUnit && ((MovedUnit) unit).inArea(x, y)) {
+        captured.add(unit);
+      }
+    }
+
+    if (captured.isEmpty())
+      return null;
+
+    captured.sort(null);
+    return captured.get(0);
   }
 
   private void addCreateButton(String name, ThrowingSupplier<Figure> supplier) {
@@ -76,8 +109,9 @@ public class FiguresPanel extends JPanel {
   protected void paintComponent(Graphics g) {
     super.paintComponent(g);
 
-    for (RenderUnit renderUnit : this.elementList) {
-      renderUnit.draw(0, 0, g);
+    for (Unit unit : this.elementList) {
+      if (!(unit instanceof RenderUnit)) continue;
+      ((RenderUnit) unit).draw(0, 0, g);
     }
   }
 }

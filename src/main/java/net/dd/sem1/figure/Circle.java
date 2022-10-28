@@ -18,6 +18,20 @@ public class Circle extends Figure {
   }
 
   @Override
+  public boolean inArea(int x, int y) {
+    return distance(x, y, this.radius, this.radius) < this.radius * this.radius;
+  }
+
+  public double distance(
+          int x0, int y0,
+          int x1, int y1
+  ) {
+    int diffX = x1 - x0;
+    int diffY = y1 - y0;
+    return diffY * diffY + diffX * diffX;
+  }
+
+  @Override
   public void isValid() throws FigureException {
     if (this.radius < 0)
       throw new TooSmallException(this);

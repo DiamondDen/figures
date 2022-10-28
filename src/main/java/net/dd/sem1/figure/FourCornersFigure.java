@@ -18,6 +18,11 @@ public abstract class FourCornersFigure extends Figure {
   }
 
   @Override
+  public boolean inArea(int x, int y) {
+    return x < width && y < height;
+  }
+
+  @Override
   public void isValid() throws FigureException {
     if (this.width < 0 || this.height < 0)
       throw new TooSmallException(this);

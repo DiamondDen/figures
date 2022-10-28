@@ -1,10 +1,12 @@
 package net.dd.sem1.figure;
 
 import net.dd.sem1.exception.FigureException;
+import net.dd.sem1.gui.render.MovedUnit;
 import net.dd.sem1.gui.render.RenderUnit;
+import net.dd.sem1.gui.render.Unit;
 import net.dd.sem1.gui.util.Position;
 
-public abstract class Figure implements RenderUnit {
+public abstract class Figure implements Unit, RenderUnit, MovedUnit {
   abstract double calcArea();
 
   public abstract void isValid() throws FigureException;
