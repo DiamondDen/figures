@@ -1,11 +1,12 @@
 package net.dd.sem1.figure;
 
 import net.dd.sem1.exception.FigureException;
+import net.dd.sem1.gui.render.RenderUnit;
 
-public abstract class Figure {
+public abstract class Figure implements RenderUnit {
   abstract double calcArea();
 
-  abstract void isValid() throws FigureException;
+  public abstract void isValid() throws FigureException;
 
   void showInfo() {
     System.out.println(this.toString());

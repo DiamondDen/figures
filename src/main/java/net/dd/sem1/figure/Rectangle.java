@@ -3,19 +3,29 @@ package net.dd.sem1.figure;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import net.dd.sem1.exception.FigureException;
+import net.dd.sem1.exception.InvalidFigureException;
 import net.dd.sem1.exception.TooBigException;
 import net.dd.sem1.exception.TooSmallException;
 
-@RequiredArgsConstructor
-public class Rectangle extends Figure {
-  private final int width, height;
+import java.awt.*;
+
+public class Rectangle extends FourCornersFigure {
+
+  public Rectangle(int width, int height) {
+    super(width, height);
+  }
 
   @Override
-  void isValid() throws FigureException {
-    if (this.width < 0 || this.height < 0)
-      throw new TooSmallException(this);
-    if (this.width > 100 || this.height > 100)
-      throw new TooBigException(this);
+  public void isValid() throws FigureException {
+    super.isValid();
+    if (this.width == this.height) {
+      throw new InvalidFigureException("A rectangle is not a square! ", this);
+    }
+  }
+
+  @Override
+  public void draw(int x, int y, Graphics gr) {
+    gr.fillRect(x, y, this.width, this.height);
   }
 
   @Override
