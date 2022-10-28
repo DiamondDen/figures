@@ -12,7 +12,7 @@ public class Circle extends Figure {
   }
 
   @Override
-  void showInfo() {
-    System.out.println("Circle with radius " + this.radius);
+  public String toString() {
+    return "Circle with radius " + this.radius;
   }
 }

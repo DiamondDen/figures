@@ -12,7 +12,7 @@ public class Square extends Figure {
   }
 
   @Override
-  void showInfo() {
-    System.out.println("Square " + this.length + "x" + this.length);
+  public String toString() {
+    return "Square " + this.length + "x" + this.length;
   }
 }

@@ -12,7 +12,7 @@ public class Rectangle extends Figure {
   }
 
   @Override
-  void showInfo() {
-    System.out.println("Rectangle " + this.width + "x" + this.height);
+  public String toString() {
+    return "Rectangle " + this.width + "x" + this.height;
   }
 }
