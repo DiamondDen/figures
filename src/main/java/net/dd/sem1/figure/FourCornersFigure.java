@@ -13,7 +13,7 @@ public abstract class FourCornersFigure extends Figure {
   protected final int width, height;
 
   @Override
-  Position centerOffset() {
+  public Position centerOffset() {
     return new Position(this.width / 2, this.height / 2, 0);
   }
 

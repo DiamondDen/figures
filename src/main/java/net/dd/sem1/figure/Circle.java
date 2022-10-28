@@ -13,7 +13,7 @@ public class Circle extends Figure {
   private final int radius;
 
   @Override
-  Position centerOffset() {
+  public Position centerOffset() {
     return new Position(this.radius, this.radius, 0);
   }
 

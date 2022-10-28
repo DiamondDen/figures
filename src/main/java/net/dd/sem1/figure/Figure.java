@@ -13,7 +13,7 @@ public abstract class Figure implements RenderUnit {
     System.out.println(this.toString());
   }
 
-  abstract Position centerOffset();
+  public abstract Position centerOffset();
 
   @Override
   public boolean equals(Object obj) {
