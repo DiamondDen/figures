@@ -49,4 +49,10 @@ public class RenderElement implements Unit, MovedUnit, RenderUnit, ColoredUnit, 
       return 0;
     return Integer.compare(((SpatialUnit) o).getPosition().getZ(), this.position.getZ());
   }
+
+  @Override
+  public String toString() {
+    return this.figure.toString() + ":\nX"
+      + this.position.getX() + ", Y: " + this.position.getY();
+  }
 }

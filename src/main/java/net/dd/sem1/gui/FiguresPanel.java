@@ -28,6 +28,8 @@ public class FiguresPanel extends JPanel {
 
   private int lastId;
 
+  private int mouseX, mouseY;
+
   public FiguresPanel() {
     FigureFactory figureFactory = new FigureFactory();
     this.addCreateButton("Circle", () -> figureFactory.createCircle(r.nextInt(58) + 3));
@@ -44,7 +46,13 @@ public class FiguresPanel extends JPanel {
 
       @Override
       public void mouseMoved(MouseEvent e) {
+        mouseX = e.getX();
+        mouseY = e.getY();
+      }
 
+      @Override
+      public void mouseExited(MouseEvent e) {
+        mouseX = mouseY = -1;
       }
     };
     this.addMouseListener(mouseAdapter);
@@ -112,6 +120,35 @@ public class FiguresPanel extends JPanel {
     for (Unit unit : this.elementList) {
       if (!(unit instanceof RenderUnit)) continue;
       ((RenderUnit) unit).draw(0, 0, g);
+    }
+
+    Unit hoverUnit = this.getCaptured(this.mouseX, this.mouseY);
+    if (hoverUnit != null) {
+      int windowWidth = this.getWidth();
+
+      g.setColor(Color.GRAY);
+
+      String desc = hoverUnit.toString();
+
+      String[] lines = desc.split("\n");
+      int stringWidth = 0;
+      for (String line : lines) {
+        stringWidth = Math.max(stringWidth, g.getFontMetrics().stringWidth(line));
+      }
+      int stringHeight = g.getFontMetrics().getHeight();
+
+      int hoverTextX = this.mouseX + 10;
+      int hoverTextY = this.mouseY;
+      if (hoverTextX + stringWidth + 10 > windowWidth) {
+        hoverTextX -= stringWidth + 25;
+      }
+      g.fillRect(hoverTextX, hoverTextY, stringWidth + 10, stringHeight * lines.length + 7);
+
+      g.setColor(Color.WHITE);
+      for (String line : lines) {
+        g.drawString(line, hoverTextX + 5, hoverTextY + stringHeight);
+        hoverTextY += stringHeight;
+      }
     }
   }
 }

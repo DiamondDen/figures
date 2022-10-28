@@ -52,6 +52,6 @@ public class Circle extends Figure {
 
   @Override
   public String toString() {
-    return "Circle with radius " + this.radius;
+    return "Circle with radius " + this.radius + ", area " + Math.round(this.calcArea());
   }
 }

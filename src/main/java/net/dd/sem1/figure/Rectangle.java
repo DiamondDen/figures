@@ -35,6 +35,6 @@ public class Rectangle extends FourCornersFigure {
 
   @Override
   public String toString() {
-    return "Rectangle " + this.width + "x" + this.height;
+    return "Rectangle " + this.width + "x" + this.height + ", area " + this.calcArea();
   }
 }

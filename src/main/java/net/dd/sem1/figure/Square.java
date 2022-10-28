@@ -7,6 +7,6 @@ public class Square extends FourCornersFigure {
 
   @Override
   public String toString() {
-    return "Square " + this.width + "x" + this.width;
+    return "Square " + this.width + "x" + this.width + ", area " + this.calcArea();
   }
 }
