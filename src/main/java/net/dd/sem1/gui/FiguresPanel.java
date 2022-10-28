@@ -1,5 +1,6 @@
 package net.dd.sem1.gui;
 
+import com.google.gson.Gson;
 import net.dd.sem1.exception.FigureException;
 import net.dd.sem1.figure.Figure;
 import net.dd.sem1.figure.FigureFactory;
@@ -11,14 +12,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 public class FiguresPanel extends JPanel {
 
@@ -29,6 +28,7 @@ public class FiguresPanel extends JPanel {
   private int lastId;
 
   private int mouseX, mouseY;
+  private boolean mousePressed;
 
   public FiguresPanel() {
     FigureFactory figureFactory = new FigureFactory();
@@ -37,15 +37,46 @@ public class FiguresPanel extends JPanel {
     this.addCreateButton("Rectangle", () -> figureFactory.createRectangle(r.nextInt(58) + 3, r.nextInt(58) + 3));
 
     MouseAdapter mouseAdapter = new MouseAdapter() {
+
+      @Override
+      public void mouseReleased(MouseEvent e) {
+        mousePressed = false;
+      }
+
       @Override
       public void mousePressed(MouseEvent e) {
+        mousePressed = true;
         Unit unit = getCaptured(e.getX(), e.getY());
         if (unit == null) return;
 
+        switch (e.getButton()) {
+          case 1:
+            if (unit instanceof MovedUnit) {
+              ((MovedUnit) unit).onCaptured(mouseX, mouseY);
+              if (unit instanceof SpatialUnit) {
+                ((SpatialUnit) unit).getPosition().setZ(lastId++);
+              }
+            }
+            break;
+          case 3:
+            if (unit instanceof ColoredUnit) {
+              ((ColoredUnit) unit).setColor(randomColor());
+            }
+            break;
+
+          default:
+            return;
+        }
       }
 
       @Override
       public void mouseMoved(MouseEvent e) {
+        mouseX = e.getX();
+        mouseY = e.getY();
+      }
+
+      @Override
+      public void mouseDragged(MouseEvent e) {
         mouseX = e.getX();
         mouseY = e.getY();
       }
@@ -65,7 +96,7 @@ public class FiguresPanel extends JPanel {
     List<Unit> captured = new ArrayList<>();
 
     for (Unit unit : this.elementList) {
-      if (unit instanceof MovedUnit && ((MovedUnit) unit).inArea(x, y)) {
+      if (unit instanceof AreaUnit && ((AreaUnit) unit).inArea(x, y)) {
         captured.add(unit);
       }
     }
@@ -95,13 +126,18 @@ public class FiguresPanel extends JPanel {
     this.add(jButton);
   }
 
-  private void addFigureWithRandomColorAndPosition(Figure figure) {
-    RenderElement renderElement = new RenderElement(figure);
-    renderElement.setColor(new Color(
+  private Color randomColor() {
+    return new Color(
             r.nextInt(256),
             r.nextInt(256),
             r.nextInt(256)
-    ));
+    );
+  }
+
+  private void addFigureWithRandomColorAndPosition(Figure figure) {
+    RenderElement renderElement = new RenderElement(figure);
+    renderElement.setColor(this.randomColor());
+
     Position centerOffset = figure.centerOffset();
     int windowWidth = this.getWidth() - centerOffset.getX();
     int windowHeight = this.getHeight() - centerOffset.getY();
@@ -117,7 +153,17 @@ public class FiguresPanel extends JPanel {
   protected void paintComponent(Graphics g) {
     super.paintComponent(g);
 
+    this.elementList.sort(null);
+    Collections.reverse(this.elementList);
+
     for (Unit unit : this.elementList) {
+      if (unit instanceof MovedUnit) {
+        if (this.mousePressed && ((MovedUnit) unit).isCaptured()) {
+          ((MovedUnit) unit).onCapturedUpdate(this.mouseX, this.mouseY);
+        } else {
+          ((MovedUnit) unit).resetCaptured();
+        }
+      }
       if (!(unit instanceof RenderUnit)) continue;
       ((RenderUnit) unit).draw(0, 0, g);
     }

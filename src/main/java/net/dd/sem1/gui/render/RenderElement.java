@@ -10,15 +10,41 @@ import java.awt.*;
 @RequiredArgsConstructor
 @Setter
 @Getter
-public class RenderElement implements Unit, MovedUnit, RenderUnit, ColoredUnit, SpatialUnit, Comparable<Unit> {
+public class RenderElement implements Unit, AreaUnit, RenderUnit, ColoredUnit, SpatialUnit, MovedUnit, Comparable<Unit> {
 
   private final Unit figure;
   private Color color;
   private Position position;
 
+  private transient int capturedOffsetX, capturedOffsetY;
+
+  @Override
+  public void onCaptured(int x, int y) {
+    this.capturedOffsetX = this.position.getX() - x;
+    this.capturedOffsetY = this.position.getY() - y;
+  }
+
+  @Override
+  public void resetCaptured() {
+    this.capturedOffsetX = this.capturedOffsetY = -1;
+  }
+
+  @Override
+  public void onCapturedUpdate(int x, int y) {
+    if (x < 0) x = 0;
+    if (y < 0) y = 0;
+    this.position.setX(x + this.capturedOffsetX);
+    this.position.setY(y + this.capturedOffsetY);
+  }
+
+  @Override
+  public boolean isCaptured() {
+    return this.capturedOffsetX != -1 && this.capturedOffsetY != -1;
+  }
+
   @Override
   public boolean inArea(int x, int y) {
-    if (!(this.figure instanceof MovedUnit)) {
+    if (!(this.figure instanceof AreaUnit)) {
       return false;
     }
 
@@ -28,7 +54,7 @@ public class RenderElement implements Unit, MovedUnit, RenderUnit, ColoredUnit, 
     if (offsetX < 0 || offsetY < 0)
       return false;
 
-    return ((MovedUnit) this.figure).inArea(offsetX, offsetY);
+    return ((AreaUnit) this.figure).inArea(offsetX, offsetY);
   }
 
   @Override
