@@ -1,5 +1,6 @@
 package net.dd.sem1.figure;
 
+import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import net.dd.sem1.exception.FigureException;
 import net.dd.sem1.exception.TooBigException;
@@ -15,6 +16,15 @@ public abstract class FourCornersFigure extends Figure {
   @Override
   public Position centerOffset() {
     return new Position(this.width / 2, this.height / 2, 0);
+  }
+
+  @Override
+  public JsonObject save() {
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.addProperty("type", "four_corners");
+    jsonObject.addProperty("width", this.width);
+    jsonObject.addProperty("height", this.height);
+    return jsonObject;
   }
 
   @Override

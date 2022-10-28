@@ -1,22 +1,37 @@
 package net.dd.sem1.gui.render;
 
+import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import net.dd.sem1.Main;
 import net.dd.sem1.gui.util.Position;
+import net.dd.sem1.storage.StorageUnit;
 
 import java.awt.*;
 
 @RequiredArgsConstructor
 @Setter
 @Getter
-public class RenderElement implements Unit, AreaUnit, RenderUnit, ColoredUnit, SpatialUnit, MovedUnit, Comparable<Unit> {
+public class RenderElement implements Unit, AreaUnit, RenderUnit, ColoredUnit, SpatialUnit, MovedUnit, StorageUnit, Comparable<Unit> {
 
-  private final Unit figure;
+  private final Unit unit;
   private Color color;
   private Position position;
 
   private transient int capturedOffsetX, capturedOffsetY;
+
+  @Override
+  public JsonObject save() {
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.addProperty("type", "render_element");
+    if (this.unit instanceof StorageUnit) {
+      jsonObject.add("unit", ((StorageUnit) this.unit).save());
+    }
+    jsonObject.add("position", Main.gson.toJsonTree(this.position));
+    jsonObject.add("color", Main.gson.toJsonTree(this.color));
+    return jsonObject;
+  }
 
   @Override
   public void onCaptured(int x, int y) {
@@ -44,7 +59,7 @@ public class RenderElement implements Unit, AreaUnit, RenderUnit, ColoredUnit, S
 
   @Override
   public boolean inArea(int x, int y) {
-    if (!(this.figure instanceof AreaUnit)) {
+    if (!(this.unit instanceof AreaUnit)) {
       return false;
     }
 
@@ -54,14 +69,14 @@ public class RenderElement implements Unit, AreaUnit, RenderUnit, ColoredUnit, S
     if (offsetX < 0 || offsetY < 0)
       return false;
 
-    return ((AreaUnit) this.figure).inArea(offsetX, offsetY);
+    return ((AreaUnit) this.unit).inArea(offsetX, offsetY);
   }
 
   @Override
   public void draw(int globalX, int globalY, Graphics gr) {
     gr.setColor(this.color);
-    if (this.figure instanceof RenderUnit) {
-      ((RenderUnit) this.figure).draw(
+    if (this.unit instanceof RenderUnit) {
+      ((RenderUnit) this.unit).draw(
               this.position.getX() + globalX,
               this.position.getY() + globalY,
               gr
@@ -78,7 +93,7 @@ public class RenderElement implements Unit, AreaUnit, RenderUnit, ColoredUnit, S
 
   @Override
   public String toString() {
-    return this.figure.toString() + ":\nX"
+    return this.unit.toString() + ":\nX"
       + this.position.getX() + ", Y: " + this.position.getY();
   }
 }

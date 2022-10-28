@@ -5,8 +5,9 @@ import net.dd.sem1.gui.render.AreaUnit;
 import net.dd.sem1.gui.render.RenderUnit;
 import net.dd.sem1.gui.render.Unit;
 import net.dd.sem1.gui.util.Position;
+import net.dd.sem1.storage.StorageUnit;
 
-public abstract class Figure implements Unit, RenderUnit, AreaUnit {
+public abstract class Figure implements Unit, RenderUnit, AreaUnit, StorageUnit {
 
   abstract double calcArea();
 

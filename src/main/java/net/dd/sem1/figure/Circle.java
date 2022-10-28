@@ -1,5 +1,6 @@
 package net.dd.sem1.figure;
 
+import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import net.dd.sem1.exception.FigureException;
 import net.dd.sem1.exception.TooBigException;
@@ -11,6 +12,14 @@ import java.awt.*;
 @RequiredArgsConstructor
 public class Circle extends Figure {
   private final int radius;
+
+  @Override
+  public JsonObject save() {
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.addProperty("type", "circle");
+    jsonObject.addProperty("radius", this.radius);
+    return jsonObject;
+  }
 
   @Override
   public Position centerOffset() {

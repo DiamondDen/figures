@@ -1,17 +1,30 @@
 package net.dd.sem1.gui;
 
-import com.google.gson.Gson;
+import com.google.gson.*;
+import com.google.gson.stream.JsonWriter;
+import net.dd.sem1.Main;
 import net.dd.sem1.exception.FigureException;
+import net.dd.sem1.figure.Circle;
 import net.dd.sem1.figure.Figure;
 import net.dd.sem1.figure.FigureFactory;
+import net.dd.sem1.figure.FourCornersFigure;
 import net.dd.sem1.gui.render.*;
 import net.dd.sem1.gui.util.Position;
 import net.dd.sem1.gui.util.ThrowingSupplier;
+import net.dd.sem1.storage.StorageUnit;
+import net.dd.sem1.storage.gson.UnitAdapter;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -24,6 +37,9 @@ public class FiguresPanel extends JPanel {
   private final List<Unit> elementList = new ArrayList<>();
 
   private final Random r = new Random();
+  private final Gson gson = new GsonBuilder()
+          .registerTypeAdapter(Unit.class, new UnitAdapter())
+          .create();
 
   private int lastId;
 
@@ -36,6 +52,45 @@ public class FiguresPanel extends JPanel {
     this.addCreateButton("Square", () -> figureFactory.createSquare(r.nextInt(58) + 3));
     this.addCreateButton("Rectangle", () -> figureFactory.createRectangle(r.nextInt(58) + 3, r.nextInt(58) + 3));
 
+    this.addMouseListeners();
+
+    this.loadData();
+    this.addShutdownSaver();
+
+    Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::repaint, 0, 15, TimeUnit.MILLISECONDS);
+  }
+
+  public void loadData() {
+    File file = new File("./figures");
+    if (!file.exists()) return;
+    try {
+      JsonArray array = Main.gson.fromJson(new FileReader(file), JsonArray.class);
+      for (JsonElement jsonElement : array) {
+        Unit unit = gson.fromJson(jsonElement, Unit.class);
+        this.elementList.add(unit);
+      }
+    } catch (FileNotFoundException ignore) {
+    }
+  }
+
+  public void addShutdownSaver() {
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+      JsonArray array = new JsonArray();
+      for (Unit unit : this.elementList) {
+        if (unit instanceof StorageUnit)
+          array.add(((StorageUnit) unit).save());
+      }
+      byte[] buffer = array.toString().getBytes(StandardCharsets.UTF_8);
+      try {
+        File file = new File("./figures");
+        Files.write(file.toPath(), buffer);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }));
+  }
+
+  public void addMouseListeners() {
     MouseAdapter mouseAdapter = new MouseAdapter() {
 
       @Override
@@ -88,8 +143,6 @@ public class FiguresPanel extends JPanel {
     };
     this.addMouseListener(mouseAdapter);
     this.addMouseMotionListener(mouseAdapter);
-
-    Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::repaint, 0, 15, TimeUnit.MILLISECONDS);
   }
 
   public Unit getCaptured(int x, int y) {
