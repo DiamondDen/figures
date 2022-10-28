@@ -10,4 +10,9 @@ public class Square extends Figure {
   double calcArea() {
     return this.length * this.length;
   }
+
+  @Override
+  void showInfo() {
+    System.out.println("Square " + this.length + "x" + this.length);
+  }
 }

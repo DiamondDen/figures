@@ -10,4 +10,9 @@ public class Circle extends Figure {
   double calcArea() {
     return Math.PI * this.radius * this.radius;
   }
+
+  @Override
+  void showInfo() {
+    System.out.println("Circle with radius " + this.radius);
+  }
 }

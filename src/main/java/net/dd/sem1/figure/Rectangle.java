@@ -10,4 +10,9 @@ public class Rectangle extends Figure {
   double calcArea() {
     return this.width * height;
   }
+
+  @Override
+  void showInfo() {
+    System.out.println("Rectangle " + this.width + "x" + this.height);
+  }
 }
