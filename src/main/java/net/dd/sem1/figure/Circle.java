@@ -28,7 +28,7 @@ public class Circle extends Figure {
   @Override
   public void draw(int x, int y, Graphics gr) {
     int diameter = this.radius * 2;
-    gr.drawOval(x, y, diameter, diameter);
+    gr.fillOval(x, y, diameter, diameter);
   }
 
   @Override
