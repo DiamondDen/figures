@@ -2,6 +2,7 @@ package net.dd.sem1.figure;
 
 import net.dd.sem1.exception.FigureException;
 import net.dd.sem1.gui.render.RenderUnit;
+import net.dd.sem1.gui.util.Position;
 
 public abstract class Figure implements RenderUnit {
   abstract double calcArea();
@@ -11,6 +12,8 @@ public abstract class Figure implements RenderUnit {
   void showInfo() {
     System.out.println(this.toString());
   }
+
+  abstract Position centerOffset();
 
   @Override
   public boolean equals(Object obj) {

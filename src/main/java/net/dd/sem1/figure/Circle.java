@@ -4,12 +4,18 @@ import lombok.RequiredArgsConstructor;
 import net.dd.sem1.exception.FigureException;
 import net.dd.sem1.exception.TooBigException;
 import net.dd.sem1.exception.TooSmallException;
+import net.dd.sem1.gui.util.Position;
 
 import java.awt.*;
 
 @RequiredArgsConstructor
 public class Circle extends Figure {
   private final int radius;
+
+  @Override
+  Position centerOffset() {
+    return new Position(this.radius, this.radius, 0);
+  }
 
   @Override
   public void isValid() throws FigureException {

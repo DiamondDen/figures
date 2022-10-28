@@ -4,12 +4,18 @@ import lombok.RequiredArgsConstructor;
 import net.dd.sem1.exception.FigureException;
 import net.dd.sem1.exception.TooBigException;
 import net.dd.sem1.exception.TooSmallException;
+import net.dd.sem1.gui.util.Position;
 
 import java.awt.*;
 
 @RequiredArgsConstructor
 public abstract class FourCornersFigure extends Figure {
   protected final int width, height;
+
+  @Override
+  Position centerOffset() {
+    return new Position(this.width / 2, this.height / 2, 0);
+  }
 
   @Override
   public void isValid() throws FigureException {
