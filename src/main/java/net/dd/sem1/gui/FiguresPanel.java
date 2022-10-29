@@ -64,30 +64,40 @@ public class FiguresPanel extends JPanel {
     File file = new File("./figures");
     if (!file.exists()) return;
     try {
-      JsonArray array = Main.gson.fromJson(new FileReader(file), JsonArray.class);
+      JsonObject jsonObject = gson.fromJson(new FileReader(file), JsonObject.class);
+      JsonArray array = jsonObject.getAsJsonArray("figures");
       for (JsonElement jsonElement : array) {
         Unit unit = gson.fromJson(jsonElement, Unit.class);
         this.elementList.add(unit);
       }
+      this.lastId = jsonObject.get("lastId").getAsInt();
     } catch (FileNotFoundException ignore) {
+    } catch (JsonSyntaxException ignore) {
+      System.err.println("can't parse file figures");
+      ignore.printStackTrace();
+    }
+  }
+
+  private void saveFigures() {
+    JsonObject jsonObject = new JsonObject();
+    JsonArray jsonFigures = new JsonArray();
+    for (Unit unit : this.elementList) {
+      if (unit instanceof StorageUnit)
+        jsonFigures.add(((StorageUnit) unit).save());
+    }
+    jsonObject.add("figures", jsonFigures);
+    jsonObject.addProperty("lastId", this.lastId);
+    byte[] buffer = jsonObject.toString().getBytes(StandardCharsets.UTF_8);
+    try {
+      File file = new File("./figures");
+      Files.write(file.toPath(), buffer);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 
   public void addShutdownSaver() {
-    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-      JsonArray array = new JsonArray();
-      for (Unit unit : this.elementList) {
-        if (unit instanceof StorageUnit)
-          array.add(((StorageUnit) unit).save());
-      }
-      byte[] buffer = array.toString().getBytes(StandardCharsets.UTF_8);
-      try {
-        File file = new File("./figures");
-        Files.write(file.toPath(), buffer);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }));
+    Runtime.getRuntime().addShutdownHook(new Thread(this::saveFigures));
   }
 
   public void addMouseListeners() {
