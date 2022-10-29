@@ -51,6 +51,7 @@ public class FiguresPanel extends JPanel {
     this.addCreateButton("Circle", () -> figureFactory.createCircle(r.nextInt(58) + 3));
     this.addCreateButton("Square", () -> figureFactory.createSquare(r.nextInt(58) + 3));
     this.addCreateButton("Rectangle", () -> figureFactory.createRectangle(r.nextInt(58) + 3, r.nextInt(58) + 3));
+    this.addButton("RESET", this.elementList::clear);
 
     this.addMouseListeners();
 
@@ -172,18 +173,24 @@ public class FiguresPanel extends JPanel {
   }
 
   private void addCreateButton(String name, ThrowingSupplier<Figure> supplier) {
+    this.addButton(name, () -> {
+      try {
+        Figure figure = supplier.get();
+        addFigureWithRandomColorAndPosition(figure);
+      } catch (FigureException figureException) {
+        System.err.println(figureException.getMessage());
+      } catch (Exception exception) {
+        exception.printStackTrace();
+      }
+    });
+  }
+
+  private void addButton(String name, Runnable onClick) {
     JButton jButton = new JButton(name);
     jButton.addMouseListener(new MouseAdapter() {
       @Override
       public void mousePressed(MouseEvent e) {
-        try {
-          Figure figure = supplier.get();
-          addFigureWithRandomColorAndPosition(figure);
-        } catch (FigureException figureException) {
-          System.err.println(figureException.getMessage());
-        } catch (Exception exception) {
-          exception.printStackTrace();
-        }
+        onClick.run();
       }
     });
     this.add(jButton);
