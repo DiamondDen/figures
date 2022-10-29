@@ -21,7 +21,6 @@ public abstract class FourCornersFigure extends Figure {
   @Override
   public JsonObject save() {
     JsonObject jsonObject = new JsonObject();
-    jsonObject.addProperty("type", "four_corners");
     jsonObject.addProperty("width", this.width);
     jsonObject.addProperty("height", this.height);
     return jsonObject;

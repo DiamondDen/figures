@@ -1,9 +1,9 @@
 package net.dd.sem1.storage.gson;
 
 import com.google.gson.*;
-import net.dd.sem1.Main;
 import net.dd.sem1.figure.Circle;
-import net.dd.sem1.figure.FourCornersFigure;
+import net.dd.sem1.figure.Rectangle;
+import net.dd.sem1.figure.Square;
 import net.dd.sem1.gui.render.RenderElement;
 import net.dd.sem1.gui.render.Unit;
 
@@ -20,8 +20,10 @@ public class UnitAdapter implements JsonDeserializer<Unit> {
         return context.deserialize(jsonObject, RenderElement.class);
       case "circle":
         return context.deserialize(jsonObject, Circle.class);
-      case "four_corners":
-        return context.deserialize(jsonObject, FourCornersFigure.class);
+      case "square":
+        return context.deserialize(jsonObject, Square.class);
+      case "rectangle":
+        return context.deserialize(jsonObject, Rectangle.class);
       default:
         return null;
     }
